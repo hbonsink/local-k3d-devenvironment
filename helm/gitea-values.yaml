@@ -1,0 +1,19 @@
+gitea:
+  admin:
+    username: admin
+    password: ${RANDOM_PASSWORD}
+    email: "gitea@local.domain"
+
+  config:
+    server:
+      ROOT_URL: http://gitea.${DOMAIN}:${HTTP_PORT}
+      SSH_DOMAIN: gitea.${DOMAIN}
+      DOMAIN: gitea.${DOMAIN}
+    repository:
+      ENABLE_PUSH_CREATE_ORG: true
+      ENABLE_PUSH_CREATE_USER: true
+    admin:
+      DISABLE_REGISTRATION: true
+      DISABLE_REGULAR_ORG_CREATION: true
+    service:
+      DISABLE_REGISTRATION: true

@@ -1,0 +1,124 @@
+# Environment files and secrets
+.env
+.env.local
+.env.*.local
+*.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform.tfstate.lock.info
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+.vault_pass.txt
+vault-password-file
+*.vault
+
+# Cloud provider credentials
+.aws/
+.azure/
+.gcp/
+gcloud/
+config.json
+credentials.json
+service-account.json
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+kubeconfig.*
+.kube/config
+kustomization.yaml.bak
+*.generated.yaml
+*-generated.yaml
+secrets/
+secret-*.yaml
+*secret*.yaml
+
+# Kustomize
+kustomization.yaml.orig
+.kustomize/
+overlays/*/generated/
+base/generated/
+components/generated/
+
+# Helm
+charts/*.tgz
+Chart.lock
+values-*.yaml
+!values-sample.yaml
+!values-example.yaml
+
+# Shell scripts and logs
+*.log
+*.swp
+*.tmp
+.history
+.bash_history
+script.log
+output.log
+debug.log
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+.vim/
+.netrwhist
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Build and temporary files
+dist/
+build/
+target/
+.cache/
+node_modules/
+*.pid
+*.seed
+*.pid.lock
+.nyc_output
+.grunt
+.sass-cache
+
+# Local development
+.local/
+tmp/
+temp/
+.tmp/
+.temp/
+local-*
+*-local
+localhost-*
+
+# Docker
+.dockerignore.local
+docker-compose.override.yml
+docker-compose.local.yml
+
