@@ -87,7 +87,7 @@ After successful deployment, the following services will be available:
 |---------|-----|---------|-------------|
 | **Traefik Dashboard** | `http://traefik.127.0.0.1.sslip.io:8001/dashboard/` | Load balancer and routing management | No auth required |
 | **Whoami Service** | `http://whoami.127.0.0.1.sslip.io:8001/` | Test service for ingress validation | No auth required |
-| **Kite Dashboard** | `http://kite.127.0.0.1.sslip.io:8001/` | Kubernetes IDE and development tools | No auth required |
+| **Kite Dashboard** | `http://kite.127.0.0.1.sslip.io:8001/` | Kubernetes IDE and development tools | Admin account can be created at first login |
 | **Headlamp Dashboard** | `http://headlamp.127.0.0.1.sslip.io:8001/` | Kubernetes cluster monitoring | Token provided by setup script |
 | **ArgoCD** | `http://argocd.127.0.0.1.sslip.io:8001/` | GitOps continuous deployment | Username: `admin`, Password: shown by setup script |
 | **Gitea** | `http://gitea.127.0.0.1.sslip.io:8001/` | Git repository management | Username: `admin`, Password: shown by setup script |
