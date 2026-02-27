@@ -4,11 +4,25 @@ ingressRoute:
     matchRule: Host(`traefik.${DOMAIN}`)
     entryPoints:
       - web
+      - websecure
 providers:
   kubernetesGateway:
+    enabled: true
+  kubernetesIngressNginx:
     enabled: true
 gateway:
   listeners:
     web:
+      port: 8000
+      protocol: HTTP
       namespacePolicy:
         from: All
+    websecure:
+      port: 8443
+      protocol: HTTPS
+      namespacePolicy:
+        from: All
+      certificateRefs:
+        - name: traefik-tls
+          kind: Secret
+          group: ""
