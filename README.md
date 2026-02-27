@@ -18,14 +18,17 @@ This repository provides an automated setup for a complete local Kubernetes deve
 
 - **Operating System**: Linux (tested on WSL2 with Ubuntu environment)
 - **Docker**: Required for k3d to run Kubernetes nodes
-- **Required packages**: `jq`, `curl`, `envsubst` (gettext-base)
+- **Required packages**: `jq`, `curl`, `envsubst` (gettext-base), `mkcert` (for SSL certificates)
 - **Internet connection**: Required for downloading tools and images
 
 ### Install Required Packages on Ubuntu
 
 ```bash
 sudo apt update
-sudo apt install -y jq curl gettext-base
+sudo apt install -y jq curl gettext-base mkcert
+
+# Install the local CA in the system trust store
+mkcert -install
 ```
 
 ## Quick Start
@@ -75,22 +78,58 @@ Run the main setup script to create your complete development environment:
 
 This script will:
 1. Create a k3d cluster with 2 agent nodes
-2. Install and configure Traefik as ingress controller
-3. Deploy all development tools with proper ingress routing
-4. Display access information for all services
+2. Generate self-signed SSL certificates using mkcert for the configured domain
+3. Install and configure Traefik as ingress controller with SSL support
+4. Deploy all development tools with proper ingress routing
+5. Display access information for all services (both HTTP and HTTPS)
 
 ## Available Services
 
 After successful deployment, the following services will be available:
 
-| Service | URL | Purpose | Credentials |
-|---------|-----|---------|-------------|
-| **Traefik Dashboard** | `http://traefik.127.0.0.1.sslip.io:8001/dashboard/` | Load balancer and routing management | No auth required |
-| **Whoami Service** | `http://whoami.127.0.0.1.sslip.io:8001/` | Test service for ingress validation | No auth required |
-| **Kite Dashboard** | `http://kite.127.0.0.1.sslip.io:8001/` | Kubernetes IDE and development tools | Admin account can be created at first login |
-| **Headlamp Dashboard** | `http://headlamp.127.0.0.1.sslip.io:8001/` | Kubernetes cluster monitoring | Token provided by setup script |
-| **ArgoCD** | `http://argocd.127.0.0.1.sslip.io:8001/` | GitOps continuous deployment | Username: `admin`, Password: shown by setup script |
-| **Gitea** | `http://gitea.127.0.0.1.sslip.io:8001/` | Git repository management | Username: `admin`, Password: shown by setup script |
+| Service | HTTP URL | HTTPS URL | Purpose | Credentials |
+|---------|----------|-----------|---------|-------------|
+| **Traefik Dashboard** | `http://traefik.127.0.0.1.sslip.io:8001/dashboard/` | `https://traefik.127.0.0.1.sslip.io/dashboard/` | Load balancer and routing management | No auth required |
+| **Whoami Service** | `http://whoami.127.0.0.1.sslip.io:8001/` | `https://whoami.127.0.0.1.sslip.io/` | Test service for ingress validation | No auth required |
+| **Kite Dashboard** | `http://kite.127.0.0.1.sslip.io:8001/` | `https://kite.127.0.0.1.sslip.io/` | Kubernetes IDE and development tools | Admin account can be created at first login |
+| **Headlamp Dashboard** | `http://headlamp.127.0.0.1.sslip.io:8001/` | `https://headlamp.127.0.0.1.sslip.io/` | Kubernetes cluster monitoring | Token provided by setup script |
+| **ArgoCD** | `http://argocd.127.0.0.1.sslip.io:8001/` | `https://argocd.127.0.0.1.sslip.io/` | GitOps continuous deployment | Username: `admin`, Password: shown by setup script |
+| **Gitea** | `http://gitea.127.0.0.1.sslip.io:8001/` | `https://gitea.127.0.0.1.sslip.io/` | Git repository management | Username: `admin`, Password: shown by setup script |
+
+## SSL/TLS Configuration
+
+This setup automatically generates and configures self-signed SSL certificates using [mkcert](https://github.com/FiloSottile/mkcert) for secure HTTPS access to all services.
+
+### Certificate Details
+
+- **Certificate Authority**: Local CA created by mkcert
+- **Certificate Scope**: Wildcard certificate for `*.{DOMAIN}` (e.g., `*.127.0.0.1.sslip.io`)
+- **Storage**: Certificate is stored as a Kubernetes secret `traefik-tls` in the `kube-system` namespace
+- **Validity**: Certificates are automatically trusted by browsers when mkcert CA is installed
+
+### Accessing Services Securely
+
+All services are available via both HTTP and HTTPS:
+- **HTTP**: Uses the configured `HTTP_PORT` (default: 8001)
+- **HTTPS**: Uses the configured `HTTPS_PORT` (default: 443)
+
+**Note**: When using non-standard ports (not 80/443), only the HTTP URLs will include the port number in the output.
+
+### Manual Certificate Installation (Windows with WSL2)
+
+If you're using WSL2 and need to manually install the CA certificate in Microsoft Edge on Windows:
+
+1. **Locate the certificate**: The mkcert CA certificate is stored in `$HOME/.local/share/mkcert/` on your WSL2 Linux distribution
+2. **Access WSL2 filesystem from Windows**: Navigate to `\\wsl.localhost\<WSL Distribution Name>` (e.g., `\\wsl.localhost\Ubuntu-22.04`)
+3. **Find the CA file**: Go to `home\<username>\.local\share\mkcert\` and copy the `rootCA.pem` file
+4. **Install in Edge**:
+   - Open Microsoft Edge
+   - Go to Settings → Privacy, search, and services → Security → Manage certificates
+   - Click on "Trusted Root Certification Authorities" tab
+   - Click "Import..." and follow the wizard to import the `rootCA.pem` file
+   - Restart Microsoft Edge
+
+After installation, all HTTPS services will show as secure in Microsoft Edge.
 
 ## Customization
 
@@ -143,10 +182,22 @@ The setup uses `sslip.io` for DNS resolution. If you experience DNS issues:
 1. Ensure your system can resolve external DNS
 2. Consider using `127.0.0.1.nip.io` as an alternative in the `.env` file
 
+### SSL Certificate Issues
+If you encounter SSL certificate warnings:
+1. Ensure mkcert is installed and the local CA is installed: `mkcert -install`
+2. Verify the certificate was created successfully during cluster setup
+3. Check that the `traefik-tls` secret exists: `kubectl get secret traefik-tls -n kube-system`
+4. Restart your browser after installing the mkcert CA
+
 ### Tool Installation Issues
 If the `get-tools.sh` script fails, ensure:
 - You have write permissions to `~/.local/bin/`
 - `curl`, `jq`, and `tar` are available on your system
+
+If mkcert installation fails:
+- Update your package list: `sudo apt update`
+- Ensure you have appropriate permissions to install packages
+- On older Ubuntu versions, mkcert might not be available in default repositories
 
 ## Contributing
 
