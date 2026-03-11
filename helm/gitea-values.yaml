@@ -6,7 +6,7 @@ gitea:
 
   config:
     server:
-      ROOT_URL: http://gitea.${DOMAIN}:${HTTP_PORT}
+      ROOT_URL: https://gitea.${DOMAIN}/
       SSH_DOMAIN: gitea.${DOMAIN}
       DOMAIN: gitea.${DOMAIN}
     repository:

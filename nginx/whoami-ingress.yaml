@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whoami-nginx
+  labels:
+    name: whoami-nginx
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "whoami-nginx.${DOMAIN}"
+  rules:
+    - host: "whoami-nginx.${DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: whoami-svc
+                port:
+                  number: 80

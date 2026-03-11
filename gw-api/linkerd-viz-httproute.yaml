@@ -1,0 +1,30 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: linkerd-viz-route
+spec:
+  parentRefs:
+  - name: traefik-gateway
+    sectionName: web # Matches the listener name in Traefik's Gateway configuration
+    kind: Gateway
+    namespace: traefik
+  - name: traefik-gateway-secure
+    sectionName: websecure # Matches the listener name in Traefik's Gateway configuration
+    kind: Gateway
+    namespace: traefik
+  hostnames:
+  - "linkerd-viz.${DOMAIN}" # Filters traffic by hostname
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        hostname: localhost
+    backendRefs:
+    - name: web
+      port: 8084
+      weight: 1 # 100% of traffic here if only one backend
